@@ -14,7 +14,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Sandwich Shop App',
-      home: OrderScreen(maxQuantity: 5), // Maximum 5 sandwiches
+      home: OrderScreen(maxQuantity: 5),
     );
   }
 }
@@ -33,7 +33,8 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
-  String _note = ''; // Stores the user's custom note
+  String _note = '';
+  String _sandwichSize = 'Footlong'; // New state for sandwich size
 
   void _increment() {
     setState(() {
@@ -50,20 +51,47 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 201, 115, 255), // Purple background
+      backgroundColor: const Color.fromARGB(255, 201, 115, 255),
       appBar: AppBar(
         title: const Text('Sandwich Counter'),
-        backgroundColor: const Color.fromARGB(255, 158, 103, 255), // Darker purple
+        backgroundColor: const Color.fromARGB(255, 158, 103, 255),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            // Display the sandwich order
+          children: [
+            // Dropdown to select sandwich size
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Size:',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 12),
+                DropdownButton<String>(
+                  value: _sandwichSize,
+                  dropdownColor: Colors.deepPurple,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  items: const [
+                    DropdownMenuItem(value: 'Footlong', child: Text('Footlong')),
+                    DropdownMenuItem(value: 'Six-inch', child: Text('Six-inch')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _sandwichSize = value!;
+                    });
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            // Display the order
             OrderItemDisplay(
               quantity: _quantity,
-              itemType: 'Footlong',
+              itemType: _sandwichSize,
               note: _note.isNotEmpty ? _note : null,
             ),
             const SizedBox(height: 20),
@@ -82,18 +110,27 @@ class _OrderScreenState extends State<OrderScreen> {
             ),
             const SizedBox(height: 20),
 
-            // Add and Remove buttons
+            // Buttons row
             Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ElevatedButton(
-                  onPressed: _quantity < widget.maxQuantity ? _increment : null,
-                  child: const Text('Add'),
+                Expanded(
+                  child: StyledButton(
+                    text: 'Add',
+                    icon: Icons.add,
+                    onPressed:
+                        _quantity < widget.maxQuantity ? _increment : null,
+                    backgroundColor: Colors.green,
+                  ),
                 ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: _quantity > 0 ? _decrement : null,
-                  child: const Text('Remove'),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: StyledButton(
+                    text: 'Remove',
+                    icon: Icons.remove,
+                    onPressed: _quantity > 0 ? _decrement : null,
+                    backgroundColor: Colors.red,
+                  ),
                 ),
               ],
             ),
@@ -105,12 +142,45 @@ class _OrderScreenState extends State<OrderScreen> {
 }
 
 // --------------------------
+// Reusable StyledButton Widget
+// --------------------------
+class StyledButton extends StatelessWidget {
+  final String text;
+  final VoidCallback? onPressed;
+  final Color backgroundColor;
+  final IconData? icon;
+
+  const StyledButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.backgroundColor = Colors.blue,
+    this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: onPressed,
+      icon: icon != null ? Icon(icon) : const SizedBox.shrink(),
+      label: Text(text),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: backgroundColor,
+        foregroundColor: Colors.white,
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      ),
+    );
+  }
+}
+
+// --------------------------
 // Order Item Display
 // --------------------------
 class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final int quantity;
-  final String? note; // Optional note
+  final String? note;
 
   const OrderItemDisplay({
     super.key,
