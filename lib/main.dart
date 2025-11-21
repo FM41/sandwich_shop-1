@@ -9,12 +9,9 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Sandwich Shop App',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: const OrderScreen(),
+      home: OrderScreen(maxQuantity: 5), // You can omit maxQuantity to use default 10
     );
   }
 }
@@ -67,12 +64,12 @@ class _OrderScreenState extends State<OrderScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton(
-                  onPressed: _increment,
+                  onPressed: _quantity < widget.maxQuantity ? _increment : null,
                   child: const Text('Add'),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
-                  onPressed: _decrement,
+                  onPressed: _quantity > 0 ? _decrement : null,
                   child: const Text('Remove'),
                 ),
               ],
