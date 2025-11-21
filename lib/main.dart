@@ -4,6 +4,9 @@ void main() {
   runApp(const App());
 }
 
+// --------------------------
+// Main App
+// --------------------------
 class App extends StatelessWidget {
   const App({super.key});
 
@@ -11,7 +14,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       title: 'Sandwich Shop App',
-      home: OrderScreen(maxQuantity: 5), // You can omit maxQuantity to use default 10
+      home: OrderScreen(maxQuantity: 5), // Maximum 5 sandwiches
     );
   }
 }
@@ -30,6 +33,7 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   int _quantity = 0;
+  String _note = ''; // Stores the user's custom note
 
   void _increment() {
     setState(() {
@@ -51,15 +55,34 @@ class _OrderScreenState extends State<OrderScreen> {
         title: const Text('Sandwich Counter'),
         backgroundColor: const Color.fromARGB(255, 158, 103, 255), // Darker purple
       ),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            // Display the sandwich order
             OrderItemDisplay(
               quantity: _quantity,
               itemType: 'Footlong',
+              note: _note.isNotEmpty ? _note : null,
             ),
             const SizedBox(height: 20),
+
+            // TextField for custom notes
+            TextField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Add a note (e.g., no onions, extra pickles)',
+              ),
+              onChanged: (text) {
+                setState(() {
+                  _note = text;
+                });
+              },
+            ),
+            const SizedBox(height: 20),
+
+            // Add and Remove buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -87,35 +110,51 @@ class _OrderScreenState extends State<OrderScreen> {
 class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final int quantity;
+  final String? note; // Optional note
 
   const OrderItemDisplay({
     super.key,
     required this.quantity,
     required this.itemType,
+    this.note,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280,
-      height: 50,
+      width: 300,
+      padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
         color: Colors.blueAccent,
         borderRadius: BorderRadius.circular(10),
       ),
-      padding: const EdgeInsets.all(8.0),
-      alignment: Alignment.center,
-      child: Text(
-        '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
-          fontSize: 16,
-        ),
+      child: Column(
+        children: [
+          Text(
+            '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
+          if (note != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8.0),
+              child: Text(
+                'Note: $note',
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 }
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
