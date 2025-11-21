@@ -11,16 +11,10 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sandwich Shop App',
-      home: Scaffold(
-        backgroundColor: const Color.fromARGB(255, 201, 115, 255), // Set background color to purple
-        appBar: AppBar(
-          title: const Text('Sandwich Counter'),
-          backgroundColor: const Color.fromARGB(255, 158, 103, 255), // darker purple for app bar
-        ),
-        body: const Center(
-          child: OrderScreen(),
-        ),
+      theme: ThemeData(
+        primarySwatch: Colors.deepPurple,
       ),
+      home: const OrderScreen(),
     );
   }
 }
@@ -54,20 +48,38 @@ class _OrderScreenState extends State<OrderScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        OrderItemDisplay(quantity: _quantity, itemType: 'Footlong'),
-        const SizedBox(height: 20),
-        Row(
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 201, 115, 255), // Purple background
+      appBar: AppBar(
+        title: const Text('Sandwich Counter'),
+        backgroundColor: const Color.fromARGB(255, 158, 103, 255), // Darker purple
+      ),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(onPressed: _increment, child: const Text('Add')),
-            const SizedBox(width: 10),
-            ElevatedButton(onPressed: _decrement, child: const Text('Remove')),
+          children: <Widget>[
+            OrderItemDisplay(
+              quantity: _quantity,
+              itemType: 'Footlong',
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: _increment,
+                  child: const Text('Add'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: _decrement,
+                  child: const Text('Remove'),
+                ),
+              ],
+            ),
           ],
         ),
-      ],
+      ),
     );
   }
 }
@@ -89,13 +101,20 @@ class OrderItemDisplay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 280,
-      height: 40,
-      color: Colors.blue,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.blueAccent,
+        borderRadius: BorderRadius.circular(10),
+      ),
       padding: const EdgeInsets.all(8.0),
       alignment: Alignment.center,
       child: Text(
         '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 16,
+        ),
       ),
     );
   }
