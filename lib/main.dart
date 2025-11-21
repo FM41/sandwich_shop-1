@@ -1,58 +1,102 @@
 import 'package:flutter/material.dart';
 
 void main() {
-   runApp(const App());
+  runApp(const App());
 }
+
 class App extends StatelessWidget {
   const App({super.key});
 
-    @override
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Sandwich Shop App',
       home: Scaffold(
-        appBar: AppBar(title: const Text('Sandwich Counter')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const OrderItemDisplay(5, 'Footlong'),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () => print('Add button pressed!'),
-              child: const Text('Add'),
-            ),
-            ElevatedButton(
-              onPressed: () => print('Remove button pressed!'),
-              child: const Text('Remove'),
-            ),
-          ],
+        backgroundColor: const Color.fromARGB(255, 201, 115, 255), // Set background color to purple
+        appBar: AppBar(
+          title: const Text('Sandwich Counter'),
+          backgroundColor: const Color.fromARGB(255, 158, 103, 255), // darker purple for app bar
         ),
-      ],
-    ),
-  ),
-  // The bit that you need to update ends here
-),
+        body: const Center(
+          child: OrderScreen(),
+        ),
+      ),
     );
   }
 }
 
+// --------------------------
+// Interactive Order Screen
+// --------------------------
+class OrderScreen extends StatefulWidget {
+  final int maxQuantity;
+
+  const OrderScreen({super.key, this.maxQuantity = 10});
+
+  @override
+  State<OrderScreen> createState() => _OrderScreenState();
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  int _quantity = 0;
+
+  void _increment() {
+    setState(() {
+      if (_quantity < widget.maxQuantity) _quantity++;
+    });
+  }
+
+  void _decrement() {
+    setState(() {
+      if (_quantity > 0) _quantity--;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        OrderItemDisplay(quantity: _quantity, itemType: 'Footlong'),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            ElevatedButton(onPressed: _increment, child: const Text('Add')),
+            const SizedBox(width: 10),
+            ElevatedButton(onPressed: _decrement, child: const Text('Remove')),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+// --------------------------
+// Order Item Display
+// --------------------------
 class OrderItemDisplay extends StatelessWidget {
   final String itemType;
   final int quantity;
 
-  const OrderItemDisplay(this.quantity, this.itemType, {super.key});
+  const OrderItemDisplay({
+    super.key,
+    required this.quantity,
+    required this.itemType,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 280,          // fixed width
-      height: 40,          // fixed height
-      color: Colors.blue,  // background color
+      width: 280,
+      height: 40,
+      color: Colors.blue,
       padding: const EdgeInsets.all(8.0),
-      child: Text('$quantity $itemType sandwich(es): ${'🥪' * quantity}'),
+      alignment: Alignment.center,
+      child: Text(
+        '$quantity $itemType sandwich(es): ${'🥪' * quantity}',
+        style: const TextStyle(color: Colors.white),
+      ),
     );
   }
 }
